@@ -4,10 +4,11 @@
   "codeowners": [
     "@Mat194pl"
   ],
-  "version":"0.0.1"
+  "version":"0.0.1",
   "config_flow": true,
   "dependencies": ["http", "network"],
-  "documentation": "https://www.github.com/Mat194pl/vemmio_home_assistant",
+  "documentation": "https://www.github.com/vemmio/vemmio_home_assistant",
+  "issue_tracker": "https://github.com/vemmio/vemmio_home_assistant/issues",
   "homekit": {},
   "iot_class": "local_polling",
   "quality_scale": "bronze",
