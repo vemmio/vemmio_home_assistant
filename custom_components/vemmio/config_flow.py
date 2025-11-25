@@ -66,11 +66,10 @@ class VemmioConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         LOGGER.debug("Zeroconf discovery_info: %s", discovery_info)
 
         # Read ID field from discovery info
-        device_id = discovery_info.properties.get("id")
         self.discovered_host = discovery_info.host
 
         device_name = discovery_info.hostname.removesuffix(".local.")
-        LOGGER.debug("Discovered %s with ID %s", device_name, device_id)
+        LOGGER.debug("Discovered %s ", device_name)
 
         try:
             self.discovered_device = await self._async_get_device(discovery_info.host)
@@ -78,13 +77,13 @@ class VemmioConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         except VemmioConnectionError:
             return self.async_abort(reason="cannot_connect")
 
-        await self.async_set_unique_id(device_id)
+        await self.async_set_unique_id(device_name)
         self._abort_if_unique_id_configured(updates={CONF_HOST: discovery_info.host})
 
         # Save discovery info for use in setup
         self.context["title_placeholders"] = {"name": device_name}
         self.discovered_device_name = device_name
-        self.discovered_device_id = device_id
+        self.discovered_device_id = device_name
 
         return await self.async_step_zeroconf_confirm()
 
@@ -99,7 +98,7 @@ class VemmioConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 data={
                     CONF_HOST: self.discovered_host,
                     "device_name": self.discovered_device_name,
-                    "device_id": self.discovered_device_id,
+                    "device_id": self.discovered_device_name,
                 },
             )
 
