@@ -71,7 +71,7 @@ class VemmioSwitch(VemmioEntity, SwitchEntity):
         LOGGER.debug(
             f"[VemmioSwitch] Switch on. my ID is {self._capability.get_uuid_with_id()}"
         )
-        await self._coordinator.data.async_turn_on(
+        await self._coordinator.data.async_turn_on_switch_by_uuid_and_id(
             self._capability.node_uuid, self._capability.id
         )
 
@@ -80,6 +80,6 @@ class VemmioSwitch(VemmioEntity, SwitchEntity):
         LOGGER.debug(
             f"[VemmioSwitch] Switch off. my ID is {self._capability.get_uuid_with_id()}"
         )
-        await self._coordinator.data.async_turn_off(
+        await self._coordinator.data.async_turn_off_switch_by_uuid_and_id(
             self._capability.node_uuid, self._capability.id
         )
