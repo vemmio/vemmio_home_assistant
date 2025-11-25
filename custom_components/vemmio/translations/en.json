@@ -1,0 +1,26 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Device is already configured"
+        },
+        "error": {
+            "cannot_connect": "Failed to connect",
+            "invalid_auth": "Invalid authentication",
+            "unknown": "Unexpected error"
+        },
+        "flow_title": "{name}",
+        "step": {
+            "user": {
+                "data": {
+                    "host": "Host",
+                    "password": "Password",
+                    "username": "Username"
+                }
+            },
+            "zeroconf_confirm": {
+                "description": "Do you want to add the Vemmio device named `{name}` to Home Assistant?",
+                "title": "Discovered Vemmio device"
+            }
+        }
+    }
+}
