@@ -4,16 +4,16 @@
   "codeowners": [
     "@Mat194pl"
   ],
-  "version":"0.0.1",
   "config_flow": true,
   "dependencies": ["http", "network"],
   "documentation": "https://www.github.com/vemmio/vemmio_home_assistant",
-  "issue_tracker": "https://github.com/vemmio/vemmio_home_assistant/issues",
   "homekit": {},
   "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/vemmio/vemmio_home_assistant/issues",
   "quality_scale": "bronze",
   "requirements": ["vemmio"],
   "ssdp": [],
+  "version": "0.0.1",
   "zeroconf": [
     {
       "type": "_http._tcp.local.",
