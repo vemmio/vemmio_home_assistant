@@ -33,9 +33,6 @@ async def async_setup_entry(
 class VemmioSwitch(VemmioEntity, SwitchEntity):
     """Defines a Vemmio switch."""
 
-    _capability: Capability
-    _coordinator: VemmioDataUpdateCoordinator
-
     def __init__(
         self, coordinator: VemmioDataUpdateCoordinator, capability: Capability
     ) -> None:
@@ -46,6 +43,7 @@ class VemmioSwitch(VemmioEntity, SwitchEntity):
 
         super().__init__(coordinator=coordinator, capability=capability)
         self._attr_unique_id = f"switch_{capability.get_uuid_with_id()}"
+        self._capability = capability
         self._coordinator = coordinator
 
     async def refresh_task(self):

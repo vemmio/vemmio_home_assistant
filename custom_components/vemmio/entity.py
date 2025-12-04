@@ -14,6 +14,39 @@ from .coordinator import VemmioDataUpdateCoordinator
 
 
 @callback
+def async_setup_attribute_entities_by_capability(
+    hass: HomeAssistant,
+    async_add_entities: AddEntitiesCallback,
+    coordinator: VemmioDataUpdateCoordinator,
+    entity_class: Callable,
+    capability_type: str,
+) -> None:
+    """Set up Vemmio entities based on device capabilities."""
+    entities = []
+
+    LOGGER.debug(
+        "[async_setup_attribute_entities_by_capability] Add entities of capability type: %s",
+        capability_type,
+    )
+
+    device_capabilities = coordinator.data.get_capabilities(capability_type)
+
+    LOGGER.debug(
+        "[async_setup_attribute_entities_by_capability] Device capabilities: %s",
+        str(device_capabilities),
+    )
+
+    for capability in device_capabilities:
+        LOGGER.debug(
+            "[async_setup_attribute_entities_by_capability] Adding entity for capability: %s",
+            str(capability),
+        )
+        entities.append(entity_class(coordinator, capability))
+
+    async_add_entities(entities, True)
+
+
+@callback
 def async_setup_attribute_entities_switches(
     hass: HomeAssistant,
     async_add_entities: AddEntitiesCallback,
@@ -40,38 +73,8 @@ def async_setup_attribute_entities_switches(
     async_add_entities(entities, True)
 
 
-@callback
-def async_setup_attribute_entities_binary_sensors(
-    hass: HomeAssistant,
-    async_add_entities: AddEntitiesCallback,
-    coordinator: VemmioDataUpdateCoordinator,
-    entity_class: Callable,
-) -> None:
-    """Set up Vemmio binary sensor entities based on device capabilities."""
-    entities = []
-
-    device_capabilities = coordinator.data.get_capabilities("openClose")
-
-    LOGGER.debug(
-        "[async_setup_attribute_entities_binary_sensors] Device capabilities: %s",
-        str(device_capabilities),
-    )
-
-    for capability in device_capabilities:
-        LOGGER.debug(
-            "[async_setup_attribute_entities_binary_sensors] Adding entity for capability: %s",
-            str(capability),
-        )
-        entities.append(entity_class(coordinator, capability))
-
-    async_add_entities(entities, True)
-
-
 class VemmioEntity(CoordinatorEntity[VemmioDataUpdateCoordinator]):
     """Defines a base Vemmio entity."""
-
-    _capability: Capability
-    _coordinator: VemmioDataUpdateCoordinator
 
     def __init__(
         self, coordinator: VemmioDataUpdateCoordinator, capability: Capability
