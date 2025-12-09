@@ -34,6 +34,10 @@ async def async_setup_entry(
         hass, async_add_entities, coordinator, VemmioMotionSensor, "motionDetector"
     )
 
+    async_setup_attribute_entities_by_capability(
+        hass, async_add_entities, coordinator, VemmioFloodBinarySensor, "floodDetector"
+    )
+
 
 class VemmioBinarySensor(VemmioEntity, BinarySensorEntity):
     """Defines a Vemmio binary sensor."""
@@ -93,6 +97,40 @@ class VemmioMotionSensor(VemmioEntity, BinarySensorEntity):
     def is_on(self) -> bool:
         """Return true if the motion sensor is on."""
         return self.coordinator.data.get_motion_status_state()
+
+    async def async_update(self) -> None:
+        """Update entity."""
+        await self._coordinator.data.get_status()
+
+    @property
+    def should_poll(self) -> bool:
+        """Return True if entity has to be polled for state."""
+        return True
+
+
+class VemmioFloodBinarySensor(VemmioEntity, BinarySensorEntity):
+    """Defines a Vemmio Flood binary sensor."""
+
+    def __init__(
+        self, coordinator: VemmioDataUpdateCoordinator, capability: Capability
+    ) -> None:
+        """Initialize."""
+
+        self._attr_device_class = BinarySensorDeviceClass.MOISTURE
+
+        LOGGER.debug("Initializing Vemmio flood binary sensor")
+        LOGGER.debug(str(coordinator.data))
+        LOGGER.debug("Host: %s", coordinator.vemmio.host)
+
+        super().__init__(coordinator=coordinator, capability=capability)
+        self._attr_unique_id = f"binary_sensor_{capability.get_uuid_with_id()}"
+        self._capability = capability
+        self._coordinator = coordinator
+
+    @property
+    def is_on(self) -> bool:
+        """Return true if the binary sensor is on."""
+        return self.coordinator.data.get_flood_status_state()
 
     async def async_update(self) -> None:
         """Update entity."""
