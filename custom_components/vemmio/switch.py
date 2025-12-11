@@ -26,7 +26,7 @@ async def async_setup_entry(
     LOGGER.debug("Setting up Vemmio switch for host %s", entry.data["host"])
 
     async_setup_attribute_entities_switches(
-        hass, async_add_entities, coordinator, VemmioSwitch
+        hass, entry, async_add_entities, coordinator, VemmioSwitch
     )
 
 
@@ -34,14 +34,21 @@ class VemmioSwitch(VemmioEntity, SwitchEntity):
     """Defines a Vemmio switch."""
 
     def __init__(
-        self, coordinator: VemmioDataUpdateCoordinator, capability: Capability
+        self,
+        coordinator: VemmioDataUpdateCoordinator,
+        capability: Capability,
+        entities_names: dict,
     ) -> None:
         """Initialize."""
         LOGGER.debug("Initializing Vemmio switch")
         LOGGER.debug(str(coordinator.data))
         LOGGER.debug("Host: %s", coordinator.vemmio.host)
 
-        super().__init__(coordinator=coordinator, capability=capability)
+        super().__init__(
+            coordinator=coordinator,
+            capability=capability,
+            entities_names=entities_names,
+        )
         self._attr_unique_id = f"switch_{capability.get_uuid_with_id()}"
         self._capability = capability
         self._coordinator = coordinator

@@ -23,12 +23,23 @@ async def async_setup_entry(
     """Set up Vemmio sensors based on a config entry."""
     coordinator = entry.runtime_data
     LOGGER.debug("Setting up Vemmio sensors for host %s", entry.data["host"])
+    LOGGER.debug("Entities names data: %s", str(entry.data["entities_names"]))
 
     async_setup_attribute_entities_by_capability(
-        hass, async_add_entities, coordinator, VemmioTemperatureSensor, "temperature"
+        hass,
+        entry,
+        async_add_entities,
+        coordinator,
+        VemmioTemperatureSensor,
+        "temperature",
     )
     async_setup_attribute_entities_by_capability(
-        hass, async_add_entities, coordinator, VemmioIlluminationSensor, "illumination"
+        hass,
+        entry,
+        async_add_entities,
+        coordinator,
+        VemmioIlluminationSensor,
+        "illumination",
     )
 
 
@@ -36,14 +47,21 @@ class VemmioTemperatureSensor(VemmioEntity, SensorEntity):
     """Defines a Vemmio Temperature sensor."""
 
     def __init__(
-        self, coordinator: VemmioDataUpdateCoordinator, capability: Capability
+        self,
+        coordinator: VemmioDataUpdateCoordinator,
+        capability: Capability,
+        entities_names: dict,
     ) -> None:
         """Initialize."""
         LOGGER.debug("Initializing Vemmio temperature sensor")
         LOGGER.debug(str(coordinator.data))
         LOGGER.debug("Host: %s", coordinator.vemmio.host)
 
-        super().__init__(coordinator=coordinator, capability=capability)
+        super().__init__(
+            coordinator=coordinator,
+            capability=capability,
+            entities_names=entities_names,
+        )
         self._attr_unique_id = f"temperature_sensor_{capability.get_uuid_with_id()}"
         self._coordinator = coordinator
         self._capability = capability
@@ -78,14 +96,21 @@ class VemmioIlluminationSensor(VemmioEntity, SensorEntity):
     _coordinator: VemmioDataUpdateCoordinator
 
     def __init__(
-        self, coordinator: VemmioDataUpdateCoordinator, capability: Capability
+        self,
+        coordinator: VemmioDataUpdateCoordinator,
+        capability: Capability,
+        entities_names: dict,
     ) -> None:
         """Initialize."""
         LOGGER.debug("Initializing Vemmio illumination sensor")
         LOGGER.debug(str(coordinator.data))
         LOGGER.debug("Host: %s", coordinator.vemmio.host)
 
-        super().__init__(coordinator=coordinator, capability=capability)
+        super().__init__(
+            coordinator=coordinator,
+            capability=capability,
+            entities_names=entities_names,
+        )
         self._attr_unique_id = f"illumination_sensor_{capability.get_uuid_with_id()}"
         self._coordinator = coordinator
         # self.update_measurement_unit()

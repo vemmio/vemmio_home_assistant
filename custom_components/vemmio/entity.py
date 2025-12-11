@@ -11,11 +11,13 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN, LOGGER
 from .coordinator import VemmioDataUpdateCoordinator
+from . import VemmioConfigEntry
 
 
 @callback
 def async_setup_attribute_entities_by_capability(
     hass: HomeAssistant,
+    config_entry: VemmioConfigEntry,
     async_add_entities: AddEntitiesCallback,
     coordinator: VemmioDataUpdateCoordinator,
     entity_class: Callable,
@@ -41,7 +43,9 @@ def async_setup_attribute_entities_by_capability(
             "[async_setup_attribute_entities_by_capability] Adding entity for capability: %s",
             str(capability),
         )
-        entities.append(entity_class(coordinator, capability))
+        entities.append(
+            entity_class(coordinator, capability, config_entry.data["entities_names"])
+        )
 
     async_add_entities(entities, True)
 
@@ -49,6 +53,7 @@ def async_setup_attribute_entities_by_capability(
 @callback
 def async_setup_attribute_entities_switches(
     hass: HomeAssistant,
+    config_entry: VemmioConfigEntry,
     async_add_entities: AddEntitiesCallback,
     coordinator: VemmioDataUpdateCoordinator,
     entity_class: Callable,
@@ -68,7 +73,9 @@ def async_setup_attribute_entities_switches(
             "[async_setup_attribute_entities_switches] Adding entity for capability: %s",
             str(capability),
         )
-        entities.append(entity_class(coordinator, capability))
+        entities.append(
+            entity_class(coordinator, capability, config_entry.data["entities_names"])
+        )
 
     async_add_entities(entities, True)
 
@@ -77,7 +84,10 @@ class VemmioEntity(CoordinatorEntity[VemmioDataUpdateCoordinator]):
     """Defines a base Vemmio entity."""
 
     def __init__(
-        self, coordinator: VemmioDataUpdateCoordinator, capability: Capability
+        self,
+        coordinator: VemmioDataUpdateCoordinator,
+        capability: Capability,
+        entities_names: dict,
     ) -> None:
         """Initialize."""
         super().__init__(coordinator)
@@ -87,6 +97,11 @@ class VemmioEntity(CoordinatorEntity[VemmioDataUpdateCoordinator]):
             self._capability.get_uuid_with_id(), self._handle_status_update
         )
         coordinator.device.enable_websocket()
+
+        if (entities_names is not None) and (
+            capability.get_uuid_with_id() in entities_names
+        ):
+            self._attr_name = entities_names[capability.get_uuid_with_id()]
 
     @property
     def should_poll(self) -> bool:

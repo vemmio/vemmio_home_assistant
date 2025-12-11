@@ -11,6 +11,13 @@
       "zeroconf_confirm": {
         "description": "Do you want to add the Vemmio named `{name}` to Home Assistant?",
         "title": "Discovered Vemmio device"
+      },
+      "name_entities": {
+        "data": {
+          "entity_name": "Name for entity"
+        },
+        "description": "Please provide name for the {capabilityName} capability:",
+        "title": "Name entity"
       }
     },
     "error": {
