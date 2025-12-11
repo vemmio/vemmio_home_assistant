@@ -27,15 +27,25 @@ async def async_setup_entry(
     LOGGER.debug("Setting up Vemmio binary sensor for host %s", entry.data["host"])
 
     async_setup_attribute_entities_by_capability(
-        hass, async_add_entities, coordinator, VemmioBinarySensor, "openClose"
+        hass, entry, async_add_entities, coordinator, VemmioBinarySensor, "openClose"
     )
 
     async_setup_attribute_entities_by_capability(
-        hass, async_add_entities, coordinator, VemmioMotionSensor, "motionDetector"
+        hass,
+        entry,
+        async_add_entities,
+        coordinator,
+        VemmioMotionSensor,
+        "motionDetector",
     )
 
     async_setup_attribute_entities_by_capability(
-        hass, async_add_entities, coordinator, VemmioFloodBinarySensor, "floodDetector"
+        hass,
+        entry,
+        async_add_entities,
+        coordinator,
+        VemmioFloodBinarySensor,
+        "floodDetector",
     )
 
 
@@ -43,7 +53,10 @@ class VemmioBinarySensor(VemmioEntity, BinarySensorEntity):
     """Defines a Vemmio binary sensor."""
 
     def __init__(
-        self, coordinator: VemmioDataUpdateCoordinator, capability: Capability
+        self,
+        coordinator: VemmioDataUpdateCoordinator,
+        capability: Capability,
+        entities_names: dict,
     ) -> None:
         """Initialize."""
 
@@ -52,7 +65,11 @@ class VemmioBinarySensor(VemmioEntity, BinarySensorEntity):
         LOGGER.debug(str(coordinator.data))
         LOGGER.debug("Host: %s", coordinator.vemmio.host)
 
-        super().__init__(coordinator=coordinator, capability=capability)
+        super().__init__(
+            coordinator=coordinator,
+            capability=capability,
+            entities_names=entities_names,
+        )
         self._attr_unique_id = f"binary_sensor_{capability.get_uuid_with_id()}"
         self._capability = capability
         self._coordinator = coordinator
@@ -78,7 +95,10 @@ class VemmioMotionSensor(VemmioEntity, BinarySensorEntity):
     """Defines a Vemmio binary sensor."""
 
     def __init__(
-        self, coordinator: VemmioDataUpdateCoordinator, capability: Capability
+        self,
+        coordinator: VemmioDataUpdateCoordinator,
+        capability: Capability,
+        entities_names: dict,
     ) -> None:
         """Initialize."""
 
@@ -88,7 +108,11 @@ class VemmioMotionSensor(VemmioEntity, BinarySensorEntity):
         LOGGER.debug(str(coordinator.data))
         LOGGER.debug("Host: %s", coordinator.vemmio.host)
 
-        super().__init__(coordinator=coordinator, capability=capability)
+        super().__init__(
+            coordinator=coordinator,
+            capability=capability,
+            entities_names=entities_names,
+        )
         self._attr_unique_id = f"motion_sensor_{capability.get_uuid_with_id()}"
         self._capability = capability
         self._coordinator = coordinator
@@ -112,7 +136,10 @@ class VemmioFloodBinarySensor(VemmioEntity, BinarySensorEntity):
     """Defines a Vemmio Flood binary sensor."""
 
     def __init__(
-        self, coordinator: VemmioDataUpdateCoordinator, capability: Capability
+        self,
+        coordinator: VemmioDataUpdateCoordinator,
+        capability: Capability,
+        entities_names: dict,
     ) -> None:
         """Initialize."""
 
@@ -122,7 +149,11 @@ class VemmioFloodBinarySensor(VemmioEntity, BinarySensorEntity):
         LOGGER.debug(str(coordinator.data))
         LOGGER.debug("Host: %s", coordinator.vemmio.host)
 
-        super().__init__(coordinator=coordinator, capability=capability)
+        super().__init__(
+            coordinator=coordinator,
+            capability=capability,
+            entities_names=entities_names,
+        )
         self._attr_unique_id = f"binary_sensor_{capability.get_uuid_with_id()}"
         self._capability = capability
         self._coordinator = coordinator

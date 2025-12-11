@@ -33,6 +33,8 @@ class VemmioConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self.discovered_device = None
         self.discovered_device_name = ""
         self.discovered_device_id = None
+        self.current_index = 0
+        self.entities_names = {}
 
     async def async_step_user(self, user_input=None) -> ConfigFlowResult:
         """Handle the initial step."""
@@ -87,20 +89,54 @@ class VemmioConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return await self.async_step_zeroconf_confirm()
 
-    async def async_step_zeroconf_confirm(
+    async def async_step_name_entities(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Handle a flow initiated by zeroconf."""
-
+        """Step through each entity and ask for a name."""
         if user_input is not None:
+            # Save the name for the current entity
+            uuid_with_id = self.discovered_device.capabilities[
+                self.current_index
+            ].get_uuid_with_id()
+            self.entities_names[uuid_with_id] = user_input["name"]
+            self.current_index += 1
+
+            # If more entities left, repeat
+            if self.current_index < len(self.discovered_device.capabilities):
+                return await self.async_step_name_entities()
+
+            # Otherwise, finish
             return self.async_create_entry(
                 title=self.discovered_device_name,
                 data={
                     CONF_HOST: self.discovered_host,
                     "device_name": self.discovered_device_name,
                     "device_id": self.discovered_device_name,
+                    "entities_names": self.entities_names,
                 },
             )
+
+        # Ask user to name the current entity
+        capabilityName = self.discovered_device.capabilities[
+            self.current_index
+        ].get_name()
+        return self.async_show_form(
+            step_id="name_entities",
+            data_schema=vol.Schema(
+                {
+                    vol.Required("name", default=capabilityName): str,
+                }
+            ),
+            description_placeholders={"capabilityName": capabilityName},
+        )
+
+    async def async_step_zeroconf_confirm(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Handle a flow initiated by zeroconf."""
+
+        if user_input is not None:
+            return await self.async_step_name_entities()
 
         self._set_confirm_only()
 
